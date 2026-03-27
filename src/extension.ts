@@ -13,9 +13,18 @@ let statusBarItem: vscode.StatusBarItem;
 const statusBarItemText = '$(history) recent';
 
 const statusBarItemTextChange = () => {
-  statusBarItem.text = `$(history) recent(${recentFiles.length})`;
+  const count = recentFiles.length;
+  statusBarItem.text = `$(history) recent(${count})`;
 
   treeDataProvider?.refresh();
+
+  if (treeView) {
+    // 显示数量
+    treeView.badge = {
+      value: count,
+      tooltip: `共 ${count} 条`,
+    };
+  }
 };
 
 const changeRecentFiles = async (document: vscode.TextDocument) => {
