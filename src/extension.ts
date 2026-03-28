@@ -9,6 +9,9 @@ let recentFiles: IRecentFile[] = [];
 let treeDataProvider: MyTreeDataProvider;
 let treeView: vscode.TreeView<IRecentFile>;
 
+let treeDataExplorerProvider: MyTreeDataExplorerProvider;
+let treeViewExplorer: vscode.TreeView<IRecentFile>;
+
 let statusBarItem: vscode.StatusBarItem;
 const statusBarItemText = '$(history) recent';
 
@@ -17,6 +20,7 @@ const statusBarItemTextChange = () => {
   statusBarItem.text = `$(history) recent(${count})`;
 
   treeDataProvider?.refresh();
+  treeDataExplorerProvider?.refresh();
 
   if (treeView) {
     // 显示数量
@@ -52,6 +56,9 @@ const changeRecentFiles = async (document: vscode.TextDocument) => {
     statusBarItemTextChange();
     if (treeView && treeView.visible) {
       treeDataProvider.getTargetNode();
+    }
+    if (treeViewExplorer && treeViewExplorer.visible) {
+      treeDataExplorerProvider.getTargetNode();
     }
   }
 };
@@ -117,6 +124,63 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<IRecentFile> 
   }
   getTargetNode() {
     treeView.reveal(this.findNode(), { focus: false, select: true });
+    return this.findNode();
+  }
+  // 可选：获取父节点（用于拖拽等）
+  getParent?(element: IRecentFile): Thenable<IRecentFile | undefined> {
+    return Promise.resolve(undefined);
+  }
+}
+
+export class MyTreeDataExplorerProvider implements vscode.TreeDataProvider<IRecentFile> {
+  // 数据变更事件（用于刷新）
+  private _onDidChangeTreeData = new vscode.EventEmitter<IRecentFile | undefined | null>();
+  readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  // 刷新视图
+  refresh(): void {
+    this._onDidChangeTreeData.fire(undefined);
+  }
+
+  // 返回节点的 TreeItem 渲染信息
+  getTreeItem(element: IRecentFile): vscode.TreeItem {
+    const treeItem = new vscode.TreeItem(element.label);
+    treeItem.iconPath = new vscode.ThemeIcon('file');
+    treeItem.tooltip = element.fsPath;
+    treeItem.description = element.workPath;
+    // treeItem.command = element.command;
+    return treeItem;
+  }
+
+  // 获取子节点（根节点时 element 为 undefined）
+  getChildren(element?: IRecentFile): Thenable<IRecentFile[]> {
+    if (element) {
+      // 返回当前节点的子节点
+      return Promise.resolve(recentFiles);
+    } else {
+      // 返回根节点数据（示例：静态结构）
+      return Promise.resolve(recentFiles);
+    }
+  }
+  private findNode(nodes?: IRecentFile[]): any {
+    const currentNodes = nodes || recentFiles;
+    for (const node of currentNodes) {
+      // 匹配目标节点（可扩展更精准的匹配规则）
+      if (node.fsPath === recentFiles[0].fsPath) {
+        return node;
+      }
+      // 递归查找子节点
+      // if (node.children && node.children.length > 0) {
+      //   const found = this.findNode(node.children);
+      //   if (found) {
+      //     return found;
+      //   }
+      // }
+    }
+    return null;
+  }
+  getTargetNode() {
+    treeViewExplorer.reveal(this.findNode(), { focus: false, select: true });
     return this.findNode();
   }
   // 可选：获取父节点（用于拖拽等）
@@ -236,6 +300,31 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  // 1. 实例化数据提供者
+  treeDataExplorerProvider = new MyTreeDataExplorerProvider();
+
+  // 2. 创建 TreeView（推荐：可获取 TreeView 实例做更多操作）
+  treeViewExplorer = vscode.window.createTreeView('recentFilesExplorer', {
+    treeDataProvider: treeDataExplorerProvider,
+    showCollapseAll: true, // 显示“全部折叠”按钮
+  });
+
+  treeViewExplorer.onDidChangeSelection(async (e) => {
+    if (e.selection[0].fsPath) {
+      const uri = vscode.Uri.file(e.selection[0].fsPath);
+      // 2. 打开文件
+      const document = await vscode.workspace.openTextDocument(uri);
+      // 3. 在编辑器中显示（显示标签页）
+      const editor = await vscode.window.showTextDocument(document);
+    }
+  });
+
+  treeViewExplorer.onDidChangeVisibility(async (e) => {
+    if (e.visible) {
+      treeDataExplorerProvider.getTargetNode();
+    }
+  });
+
   if (activeEditor) {
     changeRecentFiles(activeEditor.document);
   } else {
@@ -249,8 +338,12 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  const clearRecentFilesCommand = vscode.commands.registerCommand('recent-files-vscode.clearRecentFiles', () => {
+    clearRecentFiles();
+  });
+
   statusBarItemTextChange();
-  context.subscriptions.push(clickDisposable, changeSub, treeView);
+  context.subscriptions.push(clickDisposable, changeSub, treeView, clearRecentFilesCommand);
 }
 
 // This method is called when your extension is deactivated

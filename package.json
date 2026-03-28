@@ -23,14 +23,34 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [],
+    "commands": [
+      {
+        "command": "recent-files-vscode.clearRecentFiles",
+        "title": "clear recent files log",
+        "icon": "$(close)"
+      }
+    ],
     "configuration": {},
     "viewsContainers": {
       "activitybar": [
         {
           "id": "recent-files-vscode",
-          "title": "最近浏览记录",
+          "title": "recent-files-vscode",
           "icon": "images/icon.png"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "recent-files-vscode.clearRecentFiles",
+          "when": "view == recentFilesExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "recent-files-vscode.clearRecentFiles",
+          "when": "view == recentFiles",
+          "group": "navigation"
         }
       ]
     },
@@ -38,7 +58,15 @@
       "recent-files-vscode": [
         {
           "id": "recentFiles",
-          "name": "最近浏览记录",
+          "name": "recent-files-vscode",
+          "icon": "images/icon.png"
+        }
+      ],
+      "explorer": [
+        {
+          "type": "tree",
+          "id": "recentFilesExplorer",
+          "name": "recent-files-vscode",
           "icon": "images/icon.png"
         }
       ]
