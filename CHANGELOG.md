@@ -1,9 +1,9 @@
-# Change Log
+# recent-files-vscode Change Log
 
-All notable changes to the "recent-files-vscode" extension will be documented in this file.
+- 按照打开/切换标签的顺序排序
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.0.4]
 
-## [Unreleased]
-
-- Initial release
+- 在资源管理器中显示最近文件
+- 在标题栏添加清空最近文件记录按钮
+- 在明显上添加删除当前文件记录按钮

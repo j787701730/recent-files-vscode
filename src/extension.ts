@@ -342,8 +342,17 @@ export async function activate(context: vscode.ExtensionContext) {
     clearRecentFiles();
   });
 
+  const removeRecentFilesCommand = vscode.commands.registerCommand(
+    'recent-files-vscode.removeRecentFiles',
+    (item: IRecentFile) => {
+      if (item && item.fsPath) {
+        removeRecentFiles(item.fsPath);
+      }
+    },
+  );
+
   statusBarItemTextChange();
-  context.subscriptions.push(clickDisposable, changeSub, treeView, clearRecentFilesCommand);
+  context.subscriptions.push(clickDisposable, changeSub, treeView, clearRecentFilesCommand, removeRecentFilesCommand);
 }
 
 // This method is called when your extension is deactivated

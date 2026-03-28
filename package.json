@@ -2,7 +2,7 @@
   "name": "recent-files-vscode",
   "displayName": "recent-files-vscode",
   "description": "工作区最近浏览的文件",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "ZhengWei513",
   "author": {
     "name": "ZhengWei513"
@@ -11,7 +11,7 @@
   "repository": {
     "url": "https://github.com/j787701730/recent-files-vscode"
   },
-  "icon": "./images/icon.png",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.107.0"
   },
@@ -26,7 +26,12 @@
     "commands": [
       {
         "command": "recent-files-vscode.clearRecentFiles",
-        "title": "clear recent files log",
+        "title": "clear recent file records",
+        "icon": "$(close)"
+      },
+      {
+        "command": "recent-files-vscode.removeRecentFiles",
+        "title": "delete the current recent file record",
         "icon": "$(close)"
       }
     ],
@@ -51,6 +56,18 @@
           "command": "recent-files-vscode.clearRecentFiles",
           "when": "view == recentFiles",
           "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "recent-files-vscode.removeRecentFiles",
+          "when": "view == recentFilesExplorer",
+          "group": "inline"
+        },
+        {
+          "command": "recent-files-vscode.removeRecentFiles",
+          "when": "view == recentFiles",
+          "group": "inline"
         }
       ]
     },
