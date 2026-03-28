@@ -2,7 +2,7 @@
   "name": "recent-files-vscode",
   "displayName": "recent-files-vscode",
   "description": "工作区最近浏览的文件",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "ZhengWei513",
   "author": {
     "name": "ZhengWei513"
@@ -11,7 +11,7 @@
   "repository": {
     "url": "https://github.com/j787701730/recent-files-vscode"
   },
-  "icon": "./images/icon.png",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.107.0"
   },
@@ -23,14 +23,51 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [],
+    "commands": [
+      {
+        "command": "recent-files-vscode.clearRecentFiles",
+        "title": "clear recent file records",
+        "icon": "$(close)"
+      },
+      {
+        "command": "recent-files-vscode.removeRecentFiles",
+        "title": "delete the current recent file record",
+        "icon": "$(close)"
+      }
+    ],
     "configuration": {},
     "viewsContainers": {
       "activitybar": [
         {
           "id": "recent-files-vscode",
-          "title": "最近浏览记录",
+          "title": "recent-files-vscode",
           "icon": "images/icon.png"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "recent-files-vscode.clearRecentFiles",
+          "when": "view == recentFilesExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "recent-files-vscode.clearRecentFiles",
+          "when": "view == recentFiles",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "recent-files-vscode.removeRecentFiles",
+          "when": "view == recentFilesExplorer",
+          "group": "inline"
+        },
+        {
+          "command": "recent-files-vscode.removeRecentFiles",
+          "when": "view == recentFiles",
+          "group": "inline"
         }
       ]
     },
@@ -38,7 +75,15 @@
       "recent-files-vscode": [
         {
           "id": "recentFiles",
-          "name": "最近浏览记录",
+          "name": "recent-files-vscode",
+          "icon": "images/icon.png"
+        }
+      ],
+      "explorer": [
+        {
+          "type": "tree",
+          "id": "recentFilesExplorer",
+          "name": "recent-files-vscode",
           "icon": "images/icon.png"
         }
       ]
