@@ -295,7 +295,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // 2. 创建 TreeView（推荐：可获取 TreeView 实例做更多操作）
   treeView = vscode.window.createTreeView('recentFiles', {
     treeDataProvider: treeDataProvider,
-    showCollapseAll: true, // 显示“全部折叠”按钮
+    showCollapseAll: false, // 显示“全部折叠”按钮
   });
 
   treeView.onDidChangeSelection(async (e) => {
@@ -320,7 +320,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // 2. 创建 TreeView（推荐：可获取 TreeView 实例做更多操作）
   treeViewExplorer = vscode.window.createTreeView('recentFilesExplorer', {
     treeDataProvider: treeDataExplorerProvider,
-    showCollapseAll: true, // 显示“全部折叠”按钮
+    showCollapseAll: false, // 显示“全部折叠”按钮
   });
 
   treeViewExplorer.onDidChangeSelection(async (e) => {
