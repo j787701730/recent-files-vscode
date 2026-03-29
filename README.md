@@ -15,5 +15,3 @@
 3. 资源管理器下面
 
 ![explorer](./images/example3.png)
-
-## 图标是采用 [Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme)
