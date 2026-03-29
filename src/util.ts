@@ -18,3 +18,24 @@ export const isObject = (data: any): boolean => {
 export const toObject = (data: any): object => {
   return isObject(data) ? data : {};
 };
+
+// const iconPath = (extname: string) => {
+//   return path.join(__filename, '..', '..', 'icons', `${extname}.svg`);
+// };
+
+// const icons: Record<string, string> = {
+//   html: iconPath('html'),
+//   css: iconPath('css'),
+//   js: iconPath('javascript'),
+//   jsx: iconPath('react'),
+//   ts: iconPath('typescript'),
+//   tsx: iconPath('react_ts'),
+//   json: iconPath('json'),
+//   php: iconPath('php'),
+//   vue: iconPath('vue'),
+//   md: iconPath('markdown'),
+// };
+
+// export const getIcon = (extname: string): string | undefined => {
+//   return icons[extname];
+// };

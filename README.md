@@ -11,3 +11,7 @@
 2. 快捷选择(QuickPick)
 
 ![QuickPick](./images/example2.png)
+
+3. 资源管理器下面
+
+![explorer](./images/example3.png)

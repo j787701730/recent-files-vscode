@@ -2,7 +2,7 @@
   "name": "recent-files-vscode",
   "displayName": "recent-files-vscode",
   "description": "工作区最近浏览的文件",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "ZhengWei513",
   "author": {
     "name": "ZhengWei513"

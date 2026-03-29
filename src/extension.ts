@@ -1,7 +1,13 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-type IRecentFile = { fsPath: string; label: string; workPath?: string };
+type IRecentFile = {
+  fsPath: string;
+  label: string;
+  workPath?: string;
+  // extname?: string;
+  // iconPath?: string | vscode.ThemeIcon;
+};
 
 /** 连接的客户端 */
 let recentFiles: IRecentFile[] = [];
@@ -40,6 +46,9 @@ const changeRecentFiles = async (document: vscode.TextDocument) => {
     const fsPath = uri.fsPath; // 完整文件路径
     // const fileName = document.fileName; // 文件名（含路径）
     const name = path.basename(fsPath);
+    // const extname = path.extname(fsPath).slice(1);
+    // const iconPath = getIcon(extname) ?? vscode.ThemeIcon.File;
+
     // console.log(fsPath, fileName, name);
 
     recentFiles = recentFiles.filter((item) => item.fsPath !== fsPath);
@@ -88,7 +97,9 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<IRecentFile> 
   // 返回节点的 TreeItem 渲染信息
   getTreeItem(element: IRecentFile): vscode.TreeItem {
     const treeItem = new vscode.TreeItem(element.label);
-    treeItem.iconPath = new vscode.ThemeIcon('file');
+    // treeItem.iconPath = element.iconPath;
+    // 显示当前文件图标主题里的语言 / 文件类型图标
+    treeItem.resourceUri = vscode.Uri.file(element.fsPath);
     treeItem.tooltip = element.fsPath;
     treeItem.description = element.workPath;
     // treeItem.command = element.command;
@@ -145,7 +156,8 @@ export class MyTreeDataExplorerProvider implements vscode.TreeDataProvider<IRece
   // 返回节点的 TreeItem 渲染信息
   getTreeItem(element: IRecentFile): vscode.TreeItem {
     const treeItem = new vscode.TreeItem(element.label);
-    treeItem.iconPath = new vscode.ThemeIcon('file');
+    // treeItem.iconPath = element.iconPath;
+    treeItem.resourceUri = vscode.Uri.file(element.fsPath);
     treeItem.tooltip = element.fsPath;
     treeItem.description = element.workPath;
     // treeItem.command = element.command;
@@ -222,7 +234,9 @@ export async function activate(context: vscode.ExtensionContext) {
     /** 更新快速选择菜单项 */
     const updateItems = () => {
       quickPick.items = recentFiles.map((el) => ({
-        iconPath: new vscode.ThemeIcon('file'),
+        // 使用 主题 图标
+        iconPath: vscode.ThemeIcon.File,
+        resourceUri: vscode.Uri.file(el.fsPath), // 路径可随意，核心是后缀
         label: el.label,
         description: el.fsPath,
         // detail: el.fsPath,
@@ -281,7 +295,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // 2. 创建 TreeView（推荐：可获取 TreeView 实例做更多操作）
   treeView = vscode.window.createTreeView('recentFiles', {
     treeDataProvider: treeDataProvider,
-    showCollapseAll: true, // 显示“全部折叠”按钮
+    showCollapseAll: false, // 显示“全部折叠”按钮
   });
 
   treeView.onDidChangeSelection(async (e) => {
@@ -306,7 +320,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // 2. 创建 TreeView（推荐：可获取 TreeView 实例做更多操作）
   treeViewExplorer = vscode.window.createTreeView('recentFilesExplorer', {
     treeDataProvider: treeDataExplorerProvider,
-    showCollapseAll: true, // 显示“全部折叠”按钮
+    showCollapseAll: false, // 显示“全部折叠”按钮
   });
 
   treeViewExplorer.onDidChangeSelection(async (e) => {
