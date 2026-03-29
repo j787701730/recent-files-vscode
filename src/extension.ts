@@ -1,7 +1,14 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { getIcon } from './util';
 
-type IRecentFile = { fsPath: string; label: string; workPath?: string };
+type IRecentFile = {
+  fsPath: string;
+  label: string;
+  workPath?: string;
+  extname?: string;
+  iconPath?: string | vscode.ThemeIcon;
+};
 
 /** 连接的客户端 */
 let recentFiles: IRecentFile[] = [];
@@ -40,6 +47,9 @@ const changeRecentFiles = async (document: vscode.TextDocument) => {
     const fsPath = uri.fsPath; // 完整文件路径
     // const fileName = document.fileName; // 文件名（含路径）
     const name = path.basename(fsPath);
+    const extname = path.extname(fsPath).slice(1);
+    const iconPath = getIcon(extname) ?? vscode.ThemeIcon.File;
+
     // console.log(fsPath, fileName, name);
 
     recentFiles = recentFiles.filter((item) => item.fsPath !== fsPath);
@@ -52,7 +62,7 @@ const changeRecentFiles = async (document: vscode.TextDocument) => {
       workPath = rootPath === fsPath ? '' : fsPath.replace(rootPath, '').replace(/\\/g, '/');
     }
 
-    recentFiles.unshift({ fsPath, label: name, workPath });
+    recentFiles.unshift({ fsPath, label: name, workPath, extname, iconPath });
     statusBarItemTextChange();
     if (treeView && treeView.visible) {
       treeDataProvider.getTargetNode();
@@ -88,7 +98,7 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<IRecentFile> 
   // 返回节点的 TreeItem 渲染信息
   getTreeItem(element: IRecentFile): vscode.TreeItem {
     const treeItem = new vscode.TreeItem(element.label);
-    treeItem.iconPath = new vscode.ThemeIcon('file');
+    treeItem.iconPath = element.iconPath;
     treeItem.tooltip = element.fsPath;
     treeItem.description = element.workPath;
     // treeItem.command = element.command;
@@ -145,7 +155,7 @@ export class MyTreeDataExplorerProvider implements vscode.TreeDataProvider<IRece
   // 返回节点的 TreeItem 渲染信息
   getTreeItem(element: IRecentFile): vscode.TreeItem {
     const treeItem = new vscode.TreeItem(element.label);
-    treeItem.iconPath = new vscode.ThemeIcon('file');
+    treeItem.iconPath = element.iconPath;
     treeItem.tooltip = element.fsPath;
     treeItem.description = element.workPath;
     // treeItem.command = element.command;
@@ -222,7 +232,7 @@ export async function activate(context: vscode.ExtensionContext) {
     /** 更新快速选择菜单项 */
     const updateItems = () => {
       quickPick.items = recentFiles.map((el) => ({
-        iconPath: new vscode.ThemeIcon('file'),
+        iconPath: el.iconPath as vscode.ThemeIcon,
         label: el.label,
         description: el.fsPath,
         // detail: el.fsPath,
